@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     env: 
       ref: ${{github.ref}}
-      path: ${{github.path}}
+      head_ref: ${{github.head_ref}}
       base_ref: ${{github.base_ref}}
     steps:
       - name: "Files in PR"
