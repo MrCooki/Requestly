@@ -10,14 +10,14 @@ import argparse
 def req(id, config):
     print(id)
     for i in config:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.connect((config['host'], config['port']))
+        data = f"{config['method']} {config['path']} HTTP/1.1\r\nHost:{config['host']}\r\nUser-Agent: Requestly\r\n".encode()
         while time.time() <= config['t_end']:
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            sock.connect((config['host'], config['port']))
-            data = f"{config['method']} {config['path']} HTTP/1.1\r\nHost:{config['host']}\r\n\r\n".encode()
             sock.send(data)
             resp = sock.recv(1024)
             #i = i + 1
-            sock.close()
+        sock.close()
 
 
 def manager(config):
@@ -34,9 +34,9 @@ def manager(config):
     print(f"Starting Requests to {config['host']}:{config['port']}{config['path']} for {config['t_end']} seconds")
     t_end = time.time() + config['t_end']
     config['t_end'] = t_end
-    with Pool(30) as p:
+    with Pool(10) as p:
         path = partial(req, config=config)
-        p.map(path,range(30))
+        p.map(path, range(10))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Traffic Generator",
