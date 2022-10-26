@@ -6,7 +6,7 @@ jobs:
   config-format-checks:
     runs-on: ubuntu-latest
     env: 
-      files: ${{github.event.pull_request.base.ref}}
+      files: ${{github.event.pull_request}}
     steps:
       - name: "Files in PR"
         run: echo "$files"
