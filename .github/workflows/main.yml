@@ -1,0 +1,14 @@
+name: format-checks
+
+on:
+  pull_request:
+jobs:
+  config-format-checks:
+    runs-on: ubuntu-latest
+    env: 
+      files: ${{github.event.pull_request.base.ref}}
+    steps:
+      - name: "Files in PR"
+        run: echo "$files"
+      
+      
