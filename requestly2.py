@@ -19,9 +19,9 @@ def req(id, config):
             hash = {"_":random.getrandbits(24)}
             match config['method']:
                 case "GET":
-                    r = requests.get(url, params=hash, headers={"X-CSOC-Client-IP":f"{random.choice(lists.attacking_ips)}"})
+                    r = requests.get(url, params=hash, headers={"X-CSOC-Client-IP":f"{random.choice(lists.attacking_ips)}","User-Agent": f"{random.choice(lists.attacking_user_agents)}"})
                 case "POST":
-                    r = requests.post(url, params=hash, headers={"X-CSOC-Client-IP":f"{random.choice(lists.attacking_ips)}"})
+                    r = requests.post(url, params=hash, headers={"X-CSOC-Client-IP":f"{random.choice(lists.attacking_ips)}","User-Agent": f"{random.choice(lists.attacking_user_agents)}"})
             #i = i + 1
 
 

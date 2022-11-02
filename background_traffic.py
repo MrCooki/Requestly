@@ -16,7 +16,6 @@ def req(id, config):
     print(id)
     endpoints = [
         "/status/200",
-        "/status/403",
         "/get",
         "/anything",
         "/image"
@@ -28,10 +27,10 @@ def req(id, config):
         while time.time() <= config['t_end']:
             url = f"https://{config['host']}{random.choice(endpoints)}"
             print(url)
-            header = {"X-CSOC-Client-IP":f"{random.choice(ips)}"}
+            header = {"X-CSOC-Client-IP":f"{random.choice(ips)}", "User-Agent": f"{random.choice(lists.user_agents)}"}
             print(header)
             r = requests.get(url, headers=header)
-            time.sleep(0)
+            time.sleep(0.15)
             
             #i = i + 1
 
