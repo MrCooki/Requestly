@@ -31,8 +31,8 @@ def req(id, config):
             header = {"X-CSOC-Client-IP":f"{random.choice(ips)}"}
             print(header)
             r = requests.get(url, headers=header)
-            s = random.randint(0,3)
-            time.sleep(s)
+            time.sleep(0)
+            
             #i = i + 1
 
 
