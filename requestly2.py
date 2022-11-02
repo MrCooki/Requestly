@@ -20,10 +20,8 @@ def req(id, config):
             match config['method']:
                 case "GET":
                     r = requests.get(url, params=hash)
-                    print(r.json())
                 case "POST":
                     r = requests.post(url, params=hash)
-                    print(r.json())
             #i = i + 1
 
 
