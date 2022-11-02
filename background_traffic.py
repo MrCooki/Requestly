@@ -8,6 +8,8 @@ import time
 import argparse
 import requests
 import random
+import lists
+
 
 
 def req(id, config):
@@ -19,13 +21,16 @@ def req(id, config):
         "/anything",
         "/image"
     ]
+    ips = lists.ips
     user_agent = 'User-Agent: Requestly\r\n".encode()'
     for i in config:
         
         while time.time() <= config['t_end']:
             url = f"https://{config['host']}{random.choice(endpoints)}"
             print(url)
-            r = requests.get(url)
+            header = {"X-CSOC-Client-IP":f"{random.choice(ips)}"}
+            print(header)
+            r = requests.get(url, headers=header)
             s = random.randint(0,3)
             time.sleep(s)
             #i = i + 1

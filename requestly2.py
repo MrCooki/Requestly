@@ -8,7 +8,7 @@ import time
 import argparse
 import requests
 import random
-
+import lists
 
 def req(id, config):
     print(id)
@@ -19,9 +19,9 @@ def req(id, config):
             hash = {"_":random.getrandbits(24)}
             match config['method']:
                 case "GET":
-                    r = requests.get(url, params=hash)
+                    r = requests.get(url, params=hash, headers={"X-CSOC-Client-IP":f"{random.choice(lists.attacking_ips)}"})
                 case "POST":
-                    r = requests.post(url, params=hash)
+                    r = requests.post(url, params=hash, headers={"X-CSOC-Client-IP":f"{random.choice(lists.attacking_ips)}"})
             #i = i + 1
 
 
