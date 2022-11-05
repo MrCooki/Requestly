@@ -14,38 +14,32 @@ import lists
 
 def req(id, config):
     print(id)
-    endpoints = [
-        "/status/200",
-        "/get",
-        "/anything",
-        "/image"
-    ]
-    ips = lists.ips
-    user_agent = 'User-Agent: Requestly\r\n".encode()'
+    s = requests.session()
     for i in config:
-        
         while time.time() <= config['t_end']:
-            url = f"https://{config['host']}{random.choice(endpoints)}"
+            url = f"https://{config['host']}{random.choice(lists.paths)}"
             print(url)
-            header = {"X-CSOC-Client-IP":f"{random.choice(ips)}", "User-Agent": f"{random.choice(lists.user_agents)}"}
-            print(header)
-            r = requests.get(url, headers=header)
+            match config['method']:
+                case "GET":
+                    s.get(url, headers={"X-CSOC-Client-IP":f"{random.choice(lists.attacking_ips)}","User-Agent": f"{random.choice(lists.attacking_user_agents)}"})
+                case "POST":
+                    s.post(url, headers={"X-CSOC-Client-IP":f"{random.choice(lists.attacking_ips)}","User-Agent": f"{random.choice(lists.attacking_user_agents)}"})
             time.sleep(0.15)
-            
+                
             #i = i + 1
 
 
 
 def manager(config):
     print('''
-  _____                            _   _       
- |  __ \                          | | | |      
- | |__) |___  __ _ _   _  ___  ___| |_| |_   _ 
- |  _  // _ \/ _` | | | |/ _ \/ __| __| | | | |
- | | \ \  __/ (_| | |_| |  __/\__ \ |_| | |_| |
- |_|  \_\___|\__, |\__,_|\___||___/\__|_|\__, |
-                | |                       __/ |
-                |_|                      |___/        
+______            _                                   _   _____          __  __ _        _____            
+| ___ \          | |                                 | | |_   _|        / _|/ _(_)      |  __ \           
+| |_/ / __ _  ___| | ____ _ _ __ ___  _   _ _ __   __| |   | |_ __ __ _| |_| |_ _  ___  | |  \/ ___ _ __  
+| ___ \/ _` |/ __| |/ / _` | '__/ _ \| | | | '_ \ / _` |   | | '__/ _` |  _|  _| |/ __| | | __ / _ \ '_ \ 
+| |_/ / (_| | (__|   < (_| | | | (_) | |_| | | | | (_| |   | | | | (_| | | | | | | (__  | |_\ \  __/ | | |
+\____/ \__,_|\___|_|\_\__, |_|  \___/ \__,_|_| |_|\__,_|   \_/_|  \__,_|_| |_| |_|\___|  \____/\___|_| |_|
+                       __/ |                                                                              
+                      |___/    
 ''')
     t_end = time.time() +(config['t_end']* 3600)
     config['t_end'] = t_end
@@ -57,25 +51,24 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Traffic Generator",
     epilog='''
 
-  _____                            _   _       
- |  __ \                          | | | |      
- | |__) |___  __ _ _   _  ___  ___| |_| |_   _ 
- |  _  // _ \/ _` | | | |/ _ \/ __| __| | | | |
- | | \ \  __/ (_| | |_| |  __/\__ \ |_| | |_| |
- |_|  \_\___|\__, |\__,_|\___||___/\__|_|\__, |
-                | |                       __/ |
-                |_|                      |___/ 
-               
+______            _                                   _   _____          __  __ _        _____            
+| ___ \          | |                                 | | |_   _|        / _|/ _(_)      |  __ \           
+| |_/ / __ _  ___| | ____ _ _ __ ___  _   _ _ __   __| |   | |_ __ __ _| |_| |_ _  ___  | |  \/ ___ _ __  
+| ___ \/ _` |/ __| |/ / _` | '__/ _ \| | | | '_ \ / _` |   | | '__/ _` |  _|  _| |/ __| | | __ / _ \ '_ \ 
+| |_/ / (_| | (__|   < (_| | | | (_) | |_| | | | | (_| |   | | | | (_| | | | | | | (__  | |_\ \  __/ | | |
+\____/ \__,_|\___|_|\_\__, |_|  \___/ \__,_|_| |_|\__,_|   \_/_|  \__,_|_| |_| |_|\___|  \____/\___|_| |_|
+                       __/ |                                                                              
+                      |___/
 ''')
     parser.add_argument('--host', help="Host", type=str)
-    parser.add_argument('-p', help= 'port', type=int)
     parser.add_argument('-t', help= 'time in hours to run the traffic for', type=int)
+    parser.add_argument('-m', help="Method to use GET or POST")
     args = parser.parse_args()
     if args.host is None: 
         print('Please provide a host')
         exit()
     
-    config = {'host':args.host, 't_end': args.t, 'port': args.p}
+    config = {'host':args.host, 't_end': args.t, 'method': args.m}
     print(config)
     manager(config)
         

@@ -2,23 +2,37 @@
 
 from multiprocessing import Pool
 from functools import partial
+import re
 import socket
 import time
 import argparse
-
+import requests
+import random
+import lists
 
 def req(id, config):
     print(id)
+    user_agent = 'User-Agent: Requestly\r\n".encode()'
     for i in config:
+        url = f"https://{config['host']}{config['path']}"
+        s = requests.session()
         while time.time() <= config['t_end']:
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            sock.connect((config['host'], config['port']))
-            data = f"{config['method']} {config['path']} HTTP/1.1\r\nHost:{config['host']}\r\n\r\n".encode()
-            sock.send(data)
-            resp = sock.recv(1024)
-            print(resp)
-            #i = i + 1
-            sock.close()
+            match config['type']:
+                case "cache-bust":
+                    hash = {"_":random.getrandbits(24)}
+                    match config['method']:
+                        case "GET":
+                            s.get(url, params=hash, headers={"X-CSOC-Client-IP":f"{random.choice(lists.attacking_ips)}","User-Agent": f"{random.choice(lists.attacking_user_agents)}"})
+                        case "POST":
+                            s.post(url, params=hash, headers={"X-CSOC-Client-IP":f"{random.choice(lists.attacking_ips)}","User-Agent": f"{random.choice(lists.attacking_user_agents)}"})
+                case "volume":
+                    match config['method']:
+                        case "GET":
+                            s.get(url, headers={"X-CSOC-Client-IP":f"{random.choice(lists.attacking_ips)}","User-Agent": f"{random.choice(lists.attacking_user_agents)}"})
+                        case "POST":
+                            s.post(url, headers={"X-CSOC-Client-IP":f"{random.choice(lists.attacking_ips)}","User-Agent": f"{random.choice(lists.attacking_user_agents)}"}) 
+                    #i = i + 1
+
 
 
 def manager(config):
@@ -32,12 +46,12 @@ def manager(config):
                 | |                       __/ |
                 |_|                      |___/        
 ''')
-    print(f"Starting Requests to {config['host']}:{config['port']}{config['path']} for {config['t_end']} seconds")
+    print(f"Starting Requests to {config['host']}{config['path']} for {config['t_end']} seconds")
     t_end = time.time() + config['t_end']
     config['t_end'] = t_end
-    with Pool(30) as p:
+    with Pool(2) as p:
         path = partial(req, config=config)
-        p.map(path,range(30))
+        p.map(path, range(2))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Traffic Generator",
@@ -55,15 +69,15 @@ if __name__ == '__main__':
 ''')
     parser.add_argument('--host', help="Host", type=str)
     parser.add_argument('--path', help='Path', type=str)
-    parser.add_argument('-p', help= 'port', type=int)
     parser.add_argument('-m', help= 'method', type=str)
     parser.add_argument('-t', help= 'time in seconds to run the traffic for', type=int)
+    parser.add_argument('-ty', help= 'type of attack', type=str)
     args = parser.parse_args()
     if args.host is None: 
         print('Please provide a host')
         exit()
     
-    config = {'host':args.host, 'path': args.path, 'method': str.upper(args.m), 't_end': args.t, 'port': args.p}
+    config = {'host':args.host, 'path': args.path, 'method': str.upper(args.m),'type': str.lower(args.ty),'t_end': args.t}
     print(config)
     manager(config)
         

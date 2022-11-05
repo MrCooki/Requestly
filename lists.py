@@ -1,3 +1,10 @@
+paths = [
+     "/status/200",
+        "/get",
+        "/anything",
+        "/image"
+]
+
 ips = [
 
     "151.237.190.171",
