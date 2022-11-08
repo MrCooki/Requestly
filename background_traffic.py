@@ -14,8 +14,8 @@ import lists
 
 def req(id, config):
     print(id)
-    s = requests.session()
     for i in config:
+        s = requests.session()
         while time.time() <= config['t_end']:
             url = f"https://{config['host']}{random.choice(lists.paths)}"
             print(url)
@@ -68,7 +68,7 @@ ______            _                                   _   _____          __  __ 
         print('Please provide a host')
         exit()
     
-    config = {'host':args.host, 't_end': args.t, 'method': args.m}
+    config = {'host':args.host, 't_end': args.t, 'method': str.upper(args.m)}
     print(config)
     manager(config)
         
