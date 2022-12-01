@@ -49,10 +49,9 @@ def manager(config):
     print(f"Starting Requests to {config['host']}{config['path']} for {config['t_end']} seconds")
     t_end = time.time() + config['t_end']
     config['t_end'] = t_end
-    processes = int(config['procs'])
-    with Pool(processes) as p:
+    with Pool(config['procs']) as p:
         path = partial(req, config=config)
-        p.map(path, range(processes))
+        p.map(path, range(config['procs']))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Traffic Generator",
