@@ -17,20 +17,24 @@ def req(id, config):
         url = f"https://{config['host']}{config['path']}"
         s = requests.session()
         while time.time() <= config['t_end']:
+            if config['randomUA']:
+                UA = f"{random.choice(lists.attacking_user_agents)}"
+            else:
+                UA = 'requestly'
             match config['type']:
                 case "cache-bust":
                     hash = {"_":random.getrandbits(24)}
                     match config['method']:
                         case "GET":
-                            s.get(url, params=hash, headers={"X-CSOC-Client-IP":f"{random.choice(lists.attacking_ips)}","User-Agent": f"{random.choice(lists.attacking_user_agents)}"})
+                            s.get(url, params=hash, headers={"X-CSOC-Client-IP":f"{random.choice(lists.attacking_ips)}","User-Agent": UA})
                         case "POST":
-                            s.post(url, params=hash, headers={"X-CSOC-Client-IP":f"{random.choice(lists.attacking_ips)}","User-Agent": f"{random.choice(lists.attacking_user_agents)}"})
+                            s.post(url, params=hash, headers={"X-CSOC-Client-IP":f"{random.choice(lists.attacking_ips)}","User-Agent": UA})
                 case "volume":
                     match config['method']:
                         case "GET":
-                            s.get(url, headers={"X-CSOC-Client-IP":f"{random.choice(lists.attacking_ips)}","User-Agent": f"{random.choice(lists.attacking_user_agents)}"})
+                            s.get(url, headers={"X-CSOC-Client-IP":f"{random.choice(lists.attacking_ips)}","User-Agent": UA})
                         case "POST":
-                            s.post(url, headers={"X-CSOC-Client-IP":f"{random.choice(lists.attacking_ips)}","User-Agent": f"{random.choice(lists.attacking_user_agents)}"}) 
+                            s.post(url, headers={"X-CSOC-Client-IP":f"{random.choice(lists.attacking_ips)}","User-Agent": UA}) 
                     #i = i + 1
 
 
@@ -73,12 +77,14 @@ if __name__ == '__main__':
     parser.add_argument('-ty', help= 'type of attack', type=str)
     parser.add_argument('-t', help= 'time in seconds to run the traffic for', type=int)
     parser.add_argument('-np', help= 'Number of Processes', type=int, default=2)
+    parser.add_argument('-u', help= 'Random User-Agents', action=argparse.BooleanOptionalAction)
+    
     args = parser.parse_args()
     if args.host is None: 
         print('Please provide a host')
         exit()
     
-    config = {'host':args.host, 'path': args.path, 'method': str.upper(args.m),'type': str.lower(args.ty),'t_end': args.t,'procs': args.np }
+    config = {'host':args.host, 'path': args.path, 'method': str.upper(args.m),'type': str.lower(args.ty),'t_end': args.t,'procs': int(args.np), 'randomUA': args.u }
     print(config)
     manager(config)
         
