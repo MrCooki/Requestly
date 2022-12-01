@@ -49,9 +49,10 @@ def manager(config):
     print(f"Starting Requests to {config['host']}{config['path']} for {config['t_end']} seconds")
     t_end = time.time() + config['t_end']
     config['t_end'] = t_end
-    with Pool(2) as p:
+    processes = int(config['procs'])
+    with Pool(processes) as p:
         path = partial(req, config=config)
-        p.map(path, range(2))
+        p.map(path, range(processes))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Traffic Generator",
@@ -70,14 +71,15 @@ if __name__ == '__main__':
     parser.add_argument('--host', help="Host", type=str)
     parser.add_argument('--path', help='Path', type=str)
     parser.add_argument('-m', help= 'method', type=str)
-    parser.add_argument('-t', help= 'time in seconds to run the traffic for', type=int)
     parser.add_argument('-ty', help= 'type of attack', type=str)
+    parser.add_argument('-t', help= 'time in seconds to run the traffic for', type=int)
+    parser.add_argument('-np', help= 'Number of Processes', type=int, default=2)
     args = parser.parse_args()
     if args.host is None: 
         print('Please provide a host')
         exit()
     
-    config = {'host':args.host, 'path': args.path, 'method': str.upper(args.m),'type': str.lower(args.ty),'t_end': args.t}
+    config = {'host':args.host, 'path': args.path, 'method': str.upper(args.m),'type': str.lower(args.ty),'t_end': args.t,'procs': args.np }
     print(config)
     manager(config)
         
