@@ -1,16 +1,34 @@
-name: format-checks
-
+name: CI
 on:
+  push:
+    branches: [ main ]
   pull_request:
+    branches: [ main ]
+    
 jobs:
-  config-format-checks:
+  tests:
+    name: tests
     runs-on: ubuntu-latest
-    env: 
-      ref: ${{github.ref}}
-      head_ref: ${{github.head_ref}}
-      base_ref: ${{github.base_ref}}
     steps:
-      - name: "Files in PR"
-        run: echo "$ref $path $base_ref"
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        
+      - name: Setup Python
+        uses: actions/setup-python@v2.3.3
+        with:
+          python-version: "3.10"
+          
+      - name: Install pipenv
+        run: |
+          python -m pip install --upgrade pipenv
+          
+      - name: Install dependencys
+        run: |
+          pipenv install --deploy
+          
+      - name: Run Snyk
+        uses: snyk/actions/python@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       
       
